@@ -116,11 +116,6 @@ SYSTEM_GLIBC_MAJOR=$(echo $SYSTEM_GLIBC_VERSION | cut -d'.' -f1)
 SYSTEM_GLIBC_MINOR=$(echo $SYSTEM_GLIBC_VERSION | cut -d'.' -f2)
 SYSTEM_GLIBC=$(lsof -p $$ 2>/dev/null | grep libc- | awk ' { print $NF" --version"; } ' | sh | head -n 1 | cut -d' ' -f 10)
 
-if [ ! -f $TARGET ]; then
-    echo "Create binaries by make"
-    exit
-fi
-
 while :; do
     case $3 in
         -h|-\?|--help)
@@ -162,6 +157,10 @@ while :; do
     shift
 done
 
+if [ ! -f "$TARGET" ] && [ "$DOCKER" != "X" ]; then
+    echo "Create binaries by make"
+    exit 1
+fi
 
 if [ ! -d ./glibc-all-in-one/LICENSE ]; then
     init_glibc
